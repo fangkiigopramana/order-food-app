@@ -57,6 +57,7 @@ Route::prefix('/admin')->controller(AdminController::class)->group(function (){
     Route::get('/menu', 'menu')->name('admin.menu')->middleware(['auth','role:admin']);
     Route::put('/update-menu/{id_menu}', 'updateMenu')->name('admin.update.menu')->middleware(['auth']);
     Route::post('/add-pesanan', 'addPesanan')->name('admin.add.pesanan')->middleware(['auth','role:admin']);
+    Route::put('/update-status-order/{pesanan_id}', 'updateStatusPesanan')->name('admin.update.status.order')->middleware(['auth','role:admin']);
 
 });
 

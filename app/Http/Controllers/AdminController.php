@@ -102,4 +102,18 @@ class AdminController extends Controller
         Session::flash('update-menu-successfully', 'Data Menu Berhasil Berubah!');
         return redirect()->back();
     }
+
+
+    public function updateStatusPesanan(Request $request, $pesanan_id){
+        
+        $validatedData = $request->validate([
+            'nama_pemesan' => 'required|string',
+            'status' => 'required|in:proses,sukses,batal'
+            
+        ]);
+        $pesanan = Pesanan::findOrFail($pesanan_id);
+        $pesanan->status = $validatedData['status'];
+        $pesanan->save();
+        return redirect()->back();
+    }
 }

@@ -44,7 +44,9 @@
                                             aria-labelledby="editPesananModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                    <form action="" method="post">
+                                                    <form action="{{route('admin.update.status.order', ['pesanan_id' => $pesanan->id])}}" method="post">
+                                                        @method('put')
+                                                        @csrf
                                                         <div class="modal-header">
                                                             <h1 class="modal-title fs-5" id="editPesananModalLabel">Edit Status Pesanan</h1>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -59,8 +61,8 @@
                                                                 <label for="status" class="form-label">Status Pesanan</label>
                                                                 <select class="form-select" aria-label="Default select example" name="status" required>
                                                                     <option selected>Open this select menu</option>
-                                                                    @foreach (['proses','diterima','ditolak'] as $status)
-                                                                    <option value="{{$status}} " >{{Str::of($status)->apa()}}</option>
+                                                                    @foreach (['proses','batal','sukses'] as $status)
+                                                                    <option value="{{$status}}" @if ($pesanan->status === $status) selected @endif >{{Str::of($status)->apa()}}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -68,7 +70,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-bs-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-primary">Ubah Status</button>
+                                                            <button type="submit" class="btn btn-primary">Ubah Status</button>
                                                         </div>
                                                     </form>
                                                 </div>
