@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailPesanan;
 use App\Models\Menu;
+use App\Models\Pesanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -23,45 +26,115 @@ class HomeController extends Controller
 
     public function cart(){
         $carts = session()->get('cart', []);
+        $lastCart = [];
         $totalPrice = 0; 
 
+        $no_meja = 0;
         
         foreach ($carts as $item) {
-            
-            $itemTotal = $item['price'] * $item['quantity'];
-
-            
-            $totalPrice += $itemTotal;
+            $totalPrice += $item['total_price'];
         }
-        return view('pelanggan.cart', compact('carts','totalPrice'));
+
+        return view('pelanggan.cart', compact('carts','totalPrice', 'no_meja', 'lastCart'));
     }
 
     public function addCart(Request $request, $menu_id){
 
         $validatedData = $request->validate([
             'nama_menu' => 'required',
-            'kuantitas' => 'required|integer'
+            'kuantitas' => 'required|integer|min:1'
         ]);
-
+    
+        // Mendapatkan harga menu
+        $menu = Menu::find($menu_id);
+        if(!$menu) {
+            return redirect()->back()->with('error', 'Menu tidak ditemukan');
+        }
+    
         $cart = session()->get('cart', []);
-
-        // Tambahkan item ke keranjang
+    
         if(isset($cart[$menu_id])) {
-            $cart[$menu_id]['quantity'] += 1; // Tambahkan jumlah jika item sudah ada
+            // Produk sudah ada di keranjang, tambah kuantitas dan perbarui total harga
+            $cart[$menu_id]['quantity'] += $validatedData['kuantitas']; // Tambah kuantitas
+            $cart[$menu_id]['total_price'] = $cart[$menu_id]['price'] * $cart[$menu_id]['quantity']; // Perbarui total harga
         } else {
-            // Detail item yang ditambahkan
+            // Produk belum ada di keranjang, tambahkan sebagai item baru
             $cart[$menu_id] = [
                 'name' => $validatedData['nama_menu'],
-                'price' => Menu::select('harga')->where('id', $menu_id)->first()->harga, 
+                'price' => $menu->harga,
                 'quantity' => $validatedData['kuantitas'],
-                'total_price' => Menu::select('harga')->where('id', $menu_id)->first()->harga * $validatedData['kuantitas'], 
+                'total_price' => $menu->harga * $validatedData['kuantitas'], 
             ];
         }
-
-        // Simpan kembali ke dalam session
+    
+        // Simpan perubahan ke dalam sesi
         session()->put('cart', $cart);
+    
+        // Beri pesan konfirmasi penambahan item
+        session()->flash('add-cart-successfully', 'Item berhasil ditambahkan ke keranjang');
+    
         return redirect()->back();
     }
+
+    public function removeItem(Request $request, $order_id) {
+        // Ambil keranjang dari sesi
+        $cart = session()->get('cart', []);
+    
+        // Hapus item dari keranjang jika ada
+        if (isset($cart[$order_id])) {
+            unset($cart[$order_id]); // Hapus item berdasarkan menu_id
+        }
+    
+        // Simpan kembali ke dalam sesi
+        session()->put('cart', $cart);
+    
+        // Beri pesan konfirmasi penghapusan item
+        session()->flash('remove-cart-successfully', 'Item berhasil dihapus dari keranjang');
+    
+        return redirect()->back();
+    }
+
+    public function checkoutOrder(Request $request){
+        $validatedData = $request->validate([
+            'total_harga' => 'required|numeric',
+            'nomor_meja' => 'required|numeric',
+            'nomor_phone' => 'required|string',
+            'nama_pemesan' => 'required|string',
+        ]);
+        $carts = session()->get('cart', []);
+        $new_pesanan = new Pesanan();
+
+        $new_pesanan->no_meja = $validatedData['nomor_meja'];
+        $new_pesanan->nama_pemesan = $validatedData['nama_pemesan'];
+        $new_pesanan->total_harga = $validatedData['total_harga'];
+        $new_pesanan->metode = 'qris';
+        $new_pesanan->status = 'proses';
+        $new_pesanan->save();
+
+        foreach ($carts as $index => $cart) {
+            $menu = Menu::select('id')->where('nama', $cart['name']);
+
+            DetailPesanan::create([
+                'id_menu' => $menu->first()->id,
+                'id_pesanan' => $new_pesanan->id, 
+                'kuantitas' => $cart['quantity'],
+                'total_harga' => $cart['total_price'],
+            ]);
+        }
+
+        session()->forget('cart');
+
+        $no_meja = $new_pesanan->no_meja;
+        session()->flash('checkout-order-successfully', 'Terima kasih sudah memesan di Warmindo Aroma');
+        return redirect()->route('pelanggan.cart')->with([
+            'no_meja' => $no_meja,
+            'lastCart' => $carts
+        ]);
+
+
+    }
+    
+    
 
     
     

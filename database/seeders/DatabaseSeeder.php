@@ -79,7 +79,8 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Ahmad',
             'email' => 'ahmad456@gmail.com',
             'username' => 'ahmad456',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'profile_photo' => '/user-1.png'
         ]);
     
         $superadmin->assignRole('super admin');
@@ -88,7 +89,8 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Hasan',
             'email' => 'hasan123@gmail.com',
             'username' => 'hasan123',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'profile_photo' => '/user-1.png'
         ]);
     
         $admin->assignRole('admin');

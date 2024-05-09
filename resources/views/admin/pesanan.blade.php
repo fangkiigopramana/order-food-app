@@ -9,31 +9,6 @@
             <h6 class="m-0 font-weight-bold text-primary">Pesanan</h6>
         </div>
         <div class="card-body">
-            <div class="my-3">
-                <button type="button" class="btn btn-primary text-orange-500" style="background-color: black"
-                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <span>Print</span>
-                </button>
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ...
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -69,29 +44,33 @@
                                             aria-labelledby="editPesananModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="editPesananModalLabel">Edit Pesanan</h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label for="quantity" class="form-label">Kuantitas</label>
-                                                            <input type="number" min="1" class="form-control" name="quantity">
+                                                    <form action="" method="post">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="editPesananModalLabel">Edit Status Pesanan</h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="quantity" class="form-label">Nama Menu</label>
-                                                            <select class="form-select" aria-label="Default select example" name="quantity">
-                                                                <option selected>Open this select menu</option>
-                                                                <option value="3">Three</option>
-                                                            </select>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label for="nama_pemesan" class="form-label">Nama Pemesan|Meja</label>
+                                                                <input type="text" class="form-control" id="nama_pemesan" name="nama_pemesan" value="{{$pesanan->nama_pemesan.' ( Meja No.'.$pesanan->no_meja.' )'}}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="status" class="form-label">Status Pesanan</label>
+                                                                <select class="form-select" aria-label="Default select example" name="status" required>
+                                                                    <option selected>Open this select menu</option>
+                                                                    @foreach (['proses','diterima','ditolak'] as $status)
+                                                                    <option value="{{$status}} " >{{Str::of($status)->apa()}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary">Save changes</button>
-                                                    </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-primary">Ubah Status</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>

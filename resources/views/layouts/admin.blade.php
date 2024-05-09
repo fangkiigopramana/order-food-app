@@ -34,7 +34,11 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle mx-2" src="{{asset('admin/img/undraw_profile.svg')}}">
+                                @php
+                                    $profilePhoto = Auth::user() ? Auth::user()->profile_photo : null;
+                                    $profileSrc = $profilePhoto ? asset('storage/'.$profilePhoto) : asset('admin/img/undraw_profile.svg');
+                                @endphp
+                                <img class="img-profile rounded-circle mx-2" src="{{$profileSrc}}">
                                 <div class="d-flex flex-column mx-1">
                                     <p class="mr-2 d-none d-lg-inline text-gray-600 small m-0 font-weight-bold">Welcome</p>
                                     <span class="mr-2 d-none d-lg-inline text-white font-weight-bolder small m-0">{{Auth::user()->nama}}</span>

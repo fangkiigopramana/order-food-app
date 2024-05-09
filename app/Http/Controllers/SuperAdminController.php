@@ -24,7 +24,7 @@ class SuperAdminController extends Controller
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
             'id_kategori' => 'required|integer',
-            'harga' => 'required|numeric',
+            'harga' => 'required|integer',
             'ketersediaan' => 'required|boolean',
             'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
         ]);
@@ -41,7 +41,7 @@ class SuperAdminController extends Controller
         $newMenu->ketersediaan = $validatedData['ketersediaan'];
         $newMenu->gambar = $publicFilePath;
         $newMenu->save();
-        Session::flash('add-menu-successfully', 'Menu telah berhasil ditambahkan!');
+        Session::flash('update-menu-successfully', 'Menu telah berhasil ditambahkan!');
         return redirect()->back();        
     }
 
@@ -86,5 +86,88 @@ class SuperAdminController extends Controller
     {
         $users = User::all();
         return view('superadmin.karyawan', compact('users'));
+    }
+
+
+    public function addAccount(Request $request){
+        // dd($request);
+        $validatedData = $request->validate([
+            'nama' => 'required|string',
+            'username' => 'required|string',
+            'email' => 'required|email:rfc,dns|unique:users',
+            'password' => 'required|string|min:8',
+            'confirm_password' => 'required|string|min:8',
+            'role' => 'required|string|in:admin,super admin',
+            'foto_profil' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+        ]);
+        // dd($request);
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/photo-profile', $filename);
+            $publicFilePath = str_replace('public/', '', $filePath);
+        }
+
+        if($validatedData['password'] === $validatedData['confirm_password']){
+            $new_user = User::create([
+                'nama' =>$validatedData['nama'],
+                'username' =>$validatedData['username'],
+                'email' =>$validatedData['email'],
+                'password' =>$validatedData['password'],
+                'profile_photo' =>$publicFilePath
+            ]);
+            $new_user->assignRole($validatedData['role']);
+            Session::flash('add-account-successfully', 'Akun telah berhasil ditambahkan!');
+        }
+
+        return redirect()->back();
+
+
+        
+    }
+
+    public function updateAccount(Request $request, $user_id){
+        $validatedData = $request->validate([
+            'nama' => 'required|string',
+            'username' => 'required|string',
+            'email' => 'required|email:rfc,dns',
+            'password' => 'required|string|min:8',
+            'confirm_password' => 'required|string|min:8',
+            'role' => 'required|string|in:admin,super admin',
+            'foto_profil' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+        ]);
+        // dd($request);
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/photo-profile', $filename);
+            $publicFilePath = str_replace('public/', '', $filePath);
+        }
+
+        $user = User::findOrFail($user_id);
+        if($validatedData['password'] === $validatedData['confirm_password']){
+            $user->nama =  $validatedData['nama'];
+            $user->username = $validatedData['username'];
+            $user->email = $validatedData['email'];
+            $user->password = $validatedData['password'];
+            $user->assignRole($validatedData['role']);
+            if (isset($validatedData['foto_profil'])) {
+                $user->profile_photo = $publicFilePath;
+            }
+            $user->save();
+            Session::flash('update-account-successfully', 'Akun telah berhasil diubah!');
+            return redirect()->back();
+        }
+
+        Session::flash('update-account-failed', 'Akun Gagal diubah!');
+        return redirect()->back();
+    }
+
+    public function destroyAccount($id_account){
+        $account = User::findOrFail($id_account);
+        if ($account) {
+            $account->delete();
+        }
+        return redirect()->back();
     }
 }

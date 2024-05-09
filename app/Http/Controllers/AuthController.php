@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\DetailPesanan;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -90,7 +91,51 @@ class AuthController extends Controller
         }
 
         $detail_pesanans = DetailPesanan::with(['menu','pesanan'])->get();
-        return view('admin.dashboard', compact('menus', 'pesanans', 'karyawans', 'makanans', 'minumans', 'camilans','detail_pesanans','total_revenues'));
+
+        $pendapatanBulanan = DB::table('pesanans')
+            ->select([
+                DB::raw("MONTHNAME(created_at) as bulan"),  // Mendapatkan nama bulan dalam format teks
+                DB::raw("SUM(total_harga) as total_pendapatan"),  // Menjumlahkan total pendapatan per bulan
+                DB::raw("YEAR(created_at) as tahun"),        // Mendapatkan tahun untuk pengelompokkan
+            ])
+            ->groupBy(['tahun', 'bulan'])  // Mengelompokkan berdasarkan tahun dan nama bulan
+            ->orderBy('tahun')  // Mengurutkan berdasarkan tahun
+            ->get();
+
+        $months = [];
+        foreach ($pendapatanBulanan as $pendapatan) {
+            $months[] = $pendapatan->bulan;
+        }
+
+        $profits = [];
+        foreach ($pendapatanBulanan as $pendapatan) {
+            $profits[] = $pendapatan->total_pendapatan;
+        }
+
+
+        $count_pelanggan = DB::table('pesanans')
+            ->select([
+                DB::raw("MONTHNAME(created_at) as bulan"),  // Mendapatkan nama bulan dalam format teks
+                DB::raw("count(nama_pemesan) as total_pelanggan"),  // Menjumlahkan total pendapatan per bulan
+                DB::raw("YEAR(created_at) as tahun"),        // Mendapatkan tahun untuk pengelompokkan
+            ])
+            ->groupBy(['tahun', 'bulan'])  // Mengelompokkan berdasarkan tahun dan nama bulan
+            ->orderBy('tahun')  // Mengurutkan berdasarkan tahun
+            ->get();
+
+        $pelanggans = [];
+        foreach ($count_pelanggan as $pelanggan) {
+            $pelanggans[] = $pelanggan->total_pelanggan;
+        }
+
+
+        $recomendations = DetailPesanan::selectRaw('id_menu, COUNT(id_menu) AS jumlah')
+        ->with('menu','pesanan')
+        ->groupBy('id_menu')
+        ->orderBy('jumlah', 'desc') // Mengurutkan dari yang terbesar ke terkecil. Anda bisa mengubah ini sesuai kebutuhan
+        ->get();
+
+        return view('admin.dashboard', compact('menus', 'pesanans', 'karyawans', 'makanans', 'minumans', 'camilans','detail_pesanans','total_revenues','months','profits','pelanggans', 'recomendations'));
     }
 
     public function logout(Request $request)

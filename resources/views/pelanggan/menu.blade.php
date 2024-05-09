@@ -64,7 +64,7 @@
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="kuantitas" class="form-label">Kuantitas</label>
-                                                                <input type="number" min="1" class="form-control" name="kuantitas">
+                                                                <input type="number" min="1" class="form-control" name="kuantitas" required>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -138,4 +138,16 @@
             }
         });
     </script>
+    @if (session()->has("add-cart-successfully"))
+        @php
+            $message = session()->get("add-cart-successfully"); // Mengambil pesan dari sesi
+        @endphp
+        <script>
+            Swal.fire({
+                title: "Item Keranjang Bertambah!",
+                text: "{{ addslashes($message) }}",
+                icon: "success"
+            });
+        </script>
+    @endif
 @endpush

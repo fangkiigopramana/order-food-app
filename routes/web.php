@@ -26,6 +26,9 @@ Route::controller(HomeController::class)->group(function (){
     Route::get('/menus', 'menu')->name('pelanggan.menu');
     Route::get('/cart', 'cart')->name('pelanggan.cart');
     Route::post('/add-cart/{menu_id}', 'addCart')->name('pelanggan.addCart');
+    Route::post('/cart/remove/{order_id}', 'removeItem')->name('cart.remove');
+    Route::post('/cart/checkout', 'checkoutOrder')->name('pelanggan.checkout.cart');
+
 });
 
 Route::controller(AuthController::class)->group(function (){
@@ -44,6 +47,9 @@ Route::prefix('/superadmin')->controller(SuperAdminController::class)->group(fun
     Route::post('/cetak-laporan', 'printLaporan')->name('superadmin.print.laporan')->middleware(['auth','role:super admin']);
     Route::get('/show-laporan', 'showPDF')->name('superadmin.show.report')->middleware(['auth','role:super admin']);
     Route::get('/karyawan', 'karyawan')->name('superadmin.karyawan')->middleware(['auth','role:super admin']);
+    Route::post('/add-account', 'addAccount')->name('superadmin.add.account')->middleware(['auth','role:super admin']);
+    Route::put('/update-account/{user_id}', 'updateAccount')->name('superadmin.update.account')->middleware(['auth','role:super admin']);
+    Route::delete('/delete-account/{id_account}', 'destroyAccount')->name('superadmin.delete.account')->middleware(['auth','role:super admin']);
 });
 
 Route::prefix('/admin')->controller(AdminController::class)->group(function (){

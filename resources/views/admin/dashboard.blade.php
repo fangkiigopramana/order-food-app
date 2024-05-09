@@ -281,13 +281,6 @@
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-gray-900">Revenue</h6>
-                <div>
-                    <select id="yearSelect" class="form-select">
-                        <option value="Jan">Jan</option>
-                        <option value="Feb">Feb</option>
-                        <option value="Apr">April</option>
-                    </select>
-                </div>
             </div>
             <!-- Card Body -->
             <div class="card-body">
@@ -304,14 +297,6 @@
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-gray-900">Map Pelanggan</h6>
-                <div>
-                    <select id="weekSelect" class="form-select">
-                        <option value="week1">Week 1</option>
-                        <option value="week2">Week 2</option>
-                        <option value="week3">Week 3</option>
-                        <option value="week4">Week 4</option>
-                    </select>
-                </div>
             </div>
             <!-- Card Body -->
             <div class="card-body">
@@ -336,14 +321,8 @@
             <!-- Card Body -->
             <div class="card-body">
                 <div class="d-flex flex-row">
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
+                    <div class="pt-4">
+                        <canvas id="mostMenuOrderPieChart" width="50px"></canvas>
                     </div>
                 </div>
             </div>
@@ -360,7 +339,7 @@
             </div>
             <!-- Card Body -->
             <div class="card-body shadow animated--grow-in p-3" aria-labelledby="alertsDropdown">
-                @foreach ($menus->take(4) as $menu)
+                @foreach ($recomendations->take(4) as $recom)
                     
                 <a class="d-flex align-items-center mb-4" href="#">
                     <div class="mr-3">
@@ -369,8 +348,8 @@
                         </div>
                     </div>
                     <div>
-                        <div class="small text-gray-500">{{rand(1,20)}} Pesanan</div>
-                        <span class="font-weight-bold">{{$menu->nama}}</span>
+                        <div class="small text-gray-500">{{$recom->jumlah}} Pesanan</div>
+                        <span class="font-weight-bold">{{$recom->menu->nama}}</span>
                     </div>
                 </a>
                 @endforeach
@@ -407,25 +386,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Data untuk pendapatan per tahun
-        const revenueData = {
-            'Jan': [2100, 2200, 2300, 2400],
-            'Feb': [2200, 2300, 2400, 2500],
-            'Apr': [2300, 2400, 2500, 2600],
-        };
-
-        // Label untuk bulan
-        const monthLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
 
         // Inisialisasi Chart.js
         const ctx2 = document.getElementById('myAreaChart2').getContext('2d');
         let myLineChart2 = new Chart(ctx2, {
             type: 'line',
             data: {
-                labels: monthLabels,
+                labels: JSON.parse('<?= json_encode($months)?>'),
                 datasets: [{
                     label: 'Revenue',
-                    data: revenueData['Jan'], // Default ke tahun 2021
+                    data: JSON.parse('<?= json_encode($profits)?>'), // Default ke tahun 2021
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
                     fill: false
@@ -440,36 +410,15 @@
             }
         });
 
-        // Event Listener untuk Dropdown
-        document.getElementById('yearSelect').addEventListener('change', function() {
-            const selectedYear = this.value;
-            myLineChart2.data.datasets[0].data = revenueData[selectedYear]; // Ubah data berdasarkan tahun yang dipilih
-            myLineChart2.update(); // Perbarui chart
-        });
 
-    </script>
-
-
-    <script>
-        const customerData = {
-            'week1': [1212, 1213, 1744, 3434, 2100, 2200, 2300],
-            'week2': [1212, 1213, 1744, 3434, 2200, 2300, 2400],
-            'week3': [1212, 1213, 1744, 3434, 2300, 2400, 2500],
-            'week4': [1212, 1213, 1744, 3434, 2300, 2400, 2500],
-        };
-
-        // Label untuk bulan
-        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
-
-        // Inisialisasi Chart.js
         const ctx2MapPelanggan = document.getElementById('mapPelangganChart').getContext('2d');
         let myLineChartMapPelanggan = new Chart(ctx2MapPelanggan, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: dayLabels,
+                labels: JSON.parse('<?= json_encode($months)?>'),
                 datasets: [{
                     label: 'Map Pelanggan',
-                    data: customerData['week1'], // Default ke tahun 2021
+                    data: JSON.parse('<?= json_encode($pelanggans)?>'), // Default ke tahun 2021
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
                     fill: false
@@ -484,12 +433,29 @@
             }
         });
 
-        // Event Listener untuk Dropdown
-        document.getElementById('weekSelect').addEventListener('change', function() {
-            const selectedWeek = this.value;
-            myLineChartMapPelanggan.data.datasets[0].data = customerData[selectedWeek]; // Ubah data berdasarkan tahun yang dipilih
-            myLineChartMapPelanggan.update(); // Perbarui chart
-        });
 
+
+
+        const ctxmostMenuOrder = document.getElementById('mostMenuOrderPieChart').getContext('2d');
+        let myLineChartMostMenuOrder = new Chart(ctxmostMenuOrder, {
+            type: 'pie',
+            data: {
+                labels: JSON.parse('<?= json_encode($months)?>'),
+                datasets: [{
+                    label: 'Map Pelanggan',
+                    data: JSON.parse('<?= json_encode($pelanggans)?>'), // Default ke tahun 2021
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
 @endpush

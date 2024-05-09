@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('nama');
             $table->string('username')->unique(); // Unique constraint on username
             $table->string('password');
+            $table->text('profile_photo');
             $table->timestamps(); // Created_at and updated_at columns
         });
     }

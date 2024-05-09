@@ -7,6 +7,8 @@ use App\Models\Pesanan;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
 class AdminController extends Controller
 {
     public function pesanan()
@@ -97,6 +99,7 @@ class AdminController extends Controller
 
         }
         Menu::where('id', $id_menu)->update($updateData);
+        Session::flash('update-menu-successfully', 'Data Menu Berhasil Berubah!');
         return redirect()->back();
     }
 }

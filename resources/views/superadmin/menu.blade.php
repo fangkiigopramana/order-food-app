@@ -10,11 +10,24 @@
         </div>
         <div class="card-body">
             <div class="my-3">
-                <button type="button" class="btn btn-primary text-orange-500" style="background-color: black"
-                    data-bs-toggle="modal" data-bs-target="#addMenuModal">
-                    <img src="{{ asset("svg/add-list.svg") }}" class="mr-3">
-                    <span>Tambah</span>
-                </button>
+                <div class="d-flex justify-content-between">
+                    <div class="">
+                            <button type="button" class="btn btn-primary text-orange-500" style="background-color: black"
+                            data-bs-toggle="modal" data-bs-target="#addMenuModal">
+                            <img src="{{ asset("svg/add-list.svg") }}" class="mr-3">
+                            <span>Tambah</span>
+                        </button>
+                    </div>
+                    <div>
+                        <label for="filterCategory">Filter Menu</label>
+                        <select id="filterCategory" class="form-select">
+                            <option value="">Semua</option>
+                            <option value="makanan">Makanan</option>
+                            <option value="minuman">Minuman</option>
+                            <option value="camilan">Camilan</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="modal fade" id="addMenuModal" tabindex="-1" aria-labelledby="addMenuModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
@@ -164,23 +177,23 @@
                                                                         Kosong</option>
                                                                 </select>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger"
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger"
                                                             data-bs-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-success">Perbarui
-                                                                data</button>
-                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Perbarui
+                                                            data</button>
+                                                    </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
-                                        <form action="{{ route("superadmin.delete.menu", ["id_menu" => $menu->id]) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus menu ini?');">
+                                        <form id="delete_menu_{{ $menu->id }}"
+                                            action="{{ route("superadmin.delete.menu", ["id_menu" => $menu->id]) }}"
+                                            method="POST">
                                             @csrf
                                             @method("DELETE")
-                                            <button type="submit" class="btn btn-danger">Hapus</button>
+                                            <button type="button" onclick='showAlert(@json([$menu->id, $menu->nama]))' class="btn btn-danger">Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -211,19 +224,53 @@
     <!-- Page level plugins -->
     <script src="{{ asset("admin/vendor/datatables/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset("admin/vendor/datatables/dataTables.bootstrap4.min.js") }}"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#dataTable').DataTable(); // Inisialisasi DataTable
+            
+            $('#filterCategory').on('change', function () {
+                var selectedCategory = $(this).val(); // Ambil nilai dari select
+                if (selectedCategory === '') {
+                    table.column(1).search('').draw(); // Jika "Semua" dipilih, reset filter
+                } else {
+                    table.column(1).search(selectedCategory).draw(); // Terapkan filter
+                }
+            });
+        });
+    </script>
 
     <!-- Page level custom scripts -->
     <script src="{{ asset("admin/js/demo/datatables-demo.js") }}"></script>
-    @if (session()->has("add-menu-successfully"))
+    @if (session()->has("update-menu-successfully"))
         @php
-            $message = session()->get("add-menu-successfully"); // Mengambil pesan dari sesi
+            $message = session()->get("update-menu-successfully"); // Mengambil pesan dari sesi
         @endphp
         <script>
             Swal.fire({
-                title: "Tambah Menu Sukses!",
+                title: "Kelola Menu Sukses!",
                 text: "{{ addslashes($message) }}",
                 icon: "success"
             });
         </script>
     @endif
+
+    <script> 
+        function showAlert(data){
+            const [id, name] = data;
+
+            Swal.fire({
+                title: `Anda yakin ingin menghapus data menu ${name}?`,
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus",
+                cancelButtonText: "Tidak, batal",
+                dangerMode: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete_menu_${id}`).submit();
+                }
+            });
+        }
+    </script>
 @endpush
