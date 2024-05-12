@@ -3,7 +3,7 @@
 @hasanyrole('admin')
     <div class="text-start">
         <div class="row">
-            <div class="col-6">
+            <div class="col-4">
                 <div class="d-flex flex-row">
                     <div class="card text-white h-50 mr-3" style="width: 15rem; background-color: #FF8F0B">
                         <div class="card-body">
@@ -49,40 +49,51 @@
                                     </clipPath>
                                 </defs>
                             </svg>
-                            <h5 class="card-title font-weight-bold">Total Menu</h5>
+                            <h5 class="card-title font-weight-bold text-wrap" style="width: 6rem">Total Menu</h5>
                             <p class="card-text" style="font-size: 24px">{{count($menus)}}</p>
                         </div>
                     </div>
                 </div>
                 <div class="d-flex flex-column mt-4">
-                    <h4 class="font-weight-bold" style="color: black">Menu Rekomendasi: </h3>
-                        <div class="card p-3 text-white h-50 mr-3" style="background-color: #FF8F0B">
-                            @foreach (collect($menus)->take(5) as $menu)
-                                
-                            <div class="d-flex flex-row mb-3">
-                                <div class="p-2">{{$menu->nama}}</div>
-                                <div class="p-2">23 Pesanan</div>
-                            </div>
-                            
-                            @endforeach
-                            
+                    <!-- Illustrations -->
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Menu Rekomendasi</h6>
                         </div>
+                        <!-- Card Body -->
+                        <div class="card-body shadow animated--grow-in p-3" aria-labelledby="alertsDropdown">
+                            @foreach ($recomendations->take(4) as $recom)
+                                
+                            <a class="d-flex align-items-center mb-4">
+                                <div class="mr-3">
+                                    <div class="icon-circle text-white bg-success">
+                                        {{$loop->iteration}}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">{{$recom->jumlah}} Pesanan</div>
+                                    <span class="font-weight-bold">{{$recom->menu->nama}}</span>
+                                </div>
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-8">
 
-                <button type="button" class="btn btn-primary text-orange-500" style="background-color: black"
-                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <img src="{{ asset("svg/add-list.svg") }}" class="mr-3">
+                <a href="{{route('pelanggan.menu')}}" class="btn btn btn-primary text-orange-500 rounded-pill px-3" style="background-color: black">
+                    <img src="{{ asset("svg/plus.svg") }}" class="mr-3">
                     <span>Tambah Pesanan</span>
-                </button>
+                </a>
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Pesanan</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -92,6 +103,10 @@
                                     <div class="mb-3">
                                       <label for="nama_pemesan" class="form-label">Nama Pelanggan</label>
                                       <input type="text" class="form-control" name="nama_pemesan">
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="nomor_phone" class="form-label">Nomor Telp Pelanggan</label>
+                                      <input type="text" class="form-control" name="nomor_phone">
                                     </div>
                                     <div class="mb-3">
                                       <label for="no_meja" class="form-label">No Meja</label>
@@ -110,7 +125,7 @@
                                           </div>
                                       
                                           <div class="col-6">
-                                            <input type="number" class="form-control" name="makanan_quantity" placeholder="Quantity">
+                                            <input type="number" min="1" class="form-control" name="makanan_quantity" placeholder="Quantity">
                                           </div>
                                         </div>
                                     </div>
@@ -127,7 +142,7 @@
                                           </div>
                                       
                                           <div class="col-6">
-                                            <input type="number" class="form-control" name="minuman_quantity" placeholder="Quantity">
+                                            <input type="number" min="1" class="form-control" name="minuman_quantity" placeholder="Quantity">
                                           </div>
                                         </div>
                                     </div>
@@ -144,7 +159,7 @@
                                           </div>
                                       
                                           <div class="col-6">
-                                            <input type="number" class="form-control" name="camilan_quantity" placeholder="Quantity">
+                                            <input type="number" min="1" class="form-control" name="camilan_quantity" placeholder="Quantity">
                                           </div>
                                         </div>
                                     </div>                                    
@@ -165,6 +180,7 @@
                                 <th>Nama Menu</th>
                                 <th>Jumlah</th>
                                 <th>Jenis Menu</th>
+                                <th>Tanggal Pemesanan</th>
                                 <th>Status Pesanan</th>
                             </tr>
                         </thead>
@@ -176,9 +192,10 @@
                                 <td>{{$pesanan->menu->nama}}</td>
                                 <td>{{$pesanan->kuantitas}}</td>
                                 <td>{{$pesanan->menu->category->nama}}</td>
+                                <td style="font-size: 14px">{{\Carbon\Carbon::parse($pesanan->created_at)->isoFormat('D MMMM YYYY HH:mm').' WIB'}}</td>
                                 <td>
                                     <h5>
-                                        <span class="badge text-white bg-{{$pesanan->pesanan->status == 'proses' ? 'warning' : ($pesanan->pesanan->status == 'selesai' ? 'success' : 'danger')}}">{{ Str::of($pesanan->pesanan->status)->apa()}}</span>
+                                        <span class="badge text-white bg-{{$pesanan->pesanan->status == 'proses' ? 'warning' : ($pesanan->pesanan->status == 'sukses' ? 'success' : 'danger')}}">{{ Str::of($pesanan->pesanan->status)->apa()}}</span>
                                     </h5>
                                 </td>
                             </tr>
@@ -227,7 +244,7 @@
                         <img src="{{asset('svg/customer.svg')}}" alt="">
                     </div>
                     <div class="col ml-4">
-                        <div class="h5 mb-0 font-weight-bold text-gray-900">{{count($pesanans)}}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-900">{{count($pelanggans)}}</div>
                         <div class="text-xs font-weight-bold text-gray-900 text-uppercase mb-1">Pelanggan</div>
                     </div>
                 </div>
@@ -312,36 +329,36 @@
 <div class="row">
 
     <!-- Content Column -->
-    <div class="col-lg-8 mb-4">
+    <div class="col-lg-6 mb-4">
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Ringkasan Pesanan</h6>
             </div>
             <!-- Card Body -->
             <div class="card-body">
                 <div class="d-flex flex-row">
                     <div class="pt-4">
-                        <canvas id="mostMenuOrderPieChart" width="50px"></canvas>
+                        <canvas id="mostMenuOrderPieChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-4 mb-4">
+    <div class="col-lg-6 mb-4">
 
         <!-- Illustrations -->
         <div class="card shadow mb-4">
              <!-- Card Header - Dropdown -->
              <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Menu Favorite</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Menu Rekomendasi</h6>
             </div>
             <!-- Card Body -->
             <div class="card-body shadow animated--grow-in p-3" aria-labelledby="alertsDropdown">
-                @foreach ($recomendations->take(4) as $recom)
+                @foreach ($recomendations->take(5) as $recom)
                     
-                <a class="d-flex align-items-center mb-4" href="#">
+                <a class="d-flex align-items-center mb-4">
                     <div class="mr-3">
                         <div class="icon-circle text-white bg-success">
                             {{$loop->iteration}}
@@ -385,6 +402,12 @@
     <!-- Tambahkan Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    @php
+        $kategoriMakanan = $most_menu_order->where('nama', 'Makanan')->pluck('total_kuantitas')->first() ?? 0;
+        $kategoriMinuman = $most_menu_order->where('nama', 'Minuman')->pluck('total_kuantitas')->first() ?? 0;
+        $kategoriCamilan = $most_menu_order->where('nama', 'Camilan')->pluck('total_kuantitas')->first() ?? 0;
+
+    @endphp
     <script>
 
         // Inisialisasi Chart.js
@@ -433,29 +456,29 @@
             }
         });
 
-
-
-
+        
         const ctxmostMenuOrder = document.getElementById('mostMenuOrderPieChart').getContext('2d');
-        let myLineChartMostMenuOrder = new Chart(ctxmostMenuOrder, {
+        let myPieChartMostMenuOrder = new Chart(ctxmostMenuOrder, {
             type: 'pie',
             data: {
-                labels: JSON.parse('<?= json_encode($months)?>'),
+                labels: [
+                    'Makanan',
+                    'Minuman',
+                    'Camilan'
+                ],
                 datasets: [{
-                    label: 'Map Pelanggan',
-                    data: JSON.parse('<?= json_encode($pelanggans)?>'), // Default ke tahun 2021
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    fill: true
+                    label: 'Ringkasan Pesanan',
+                    data: [<?= $kategoriMakanan ?>, <?= $kategoriMinuman ?>, <?= $kategoriCamilan ?>],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
                 }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
             }
         });
+
+
     </script>
 @endpush

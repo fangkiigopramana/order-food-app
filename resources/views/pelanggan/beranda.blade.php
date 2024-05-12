@@ -24,7 +24,7 @@
                         <div class="card text-center rounded-3 bg-secondary-subtle overflow-hidden"> <!-- overflow-hidden untuk mencegah gambar keluar -->
                             <div class="card-header p-0 rounded-3">
                             <img
-                                src="https://assets.unileversolutions.com/recipes-v2/236001.jpg"
+                                src="{{asset('storage/'.$menu->gambar)}}"
                                 alt=""
                                 class="w-100 rounded-top-3"
                                 style="object-fit: cover; height: 200px;"> <!-- Membuat gambar terisi penuh dan mempertahankan rasio -->

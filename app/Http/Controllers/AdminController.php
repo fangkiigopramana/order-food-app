@@ -25,6 +25,7 @@ class AdminController extends Controller
     public function addPesanan(Request $request){
         $validatedData = $request->validate([
             'nama_pemesan' => 'required|string|min:3|max:255',  
+            'nomor_phone' => 'required|string',  
             'no_meja' => 'required|integer|min:1|max:1000',     
             'makanan-select' => 'required|exists:menus,id',   
             'makanan_quantity' => 'required|integer|min:1',      
@@ -35,6 +36,7 @@ class AdminController extends Controller
         ]);
         $pesanan = new Pesanan;
         $pesanan->nama_pemesan = $validatedData['nama_pemesan'];
+        $pesanan->nomor_phone = $validatedData['nomor_phone'];
         $pesanan->no_meja = $validatedData['no_meja'];
         $pesanan->metode = 'qris';
         $pesanan->status = 'proses';
@@ -72,10 +74,8 @@ class AdminController extends Controller
         return redirect()->back();
     }
     public function updateMenu(Request $request, $id_menu){
-        // dd($request);
         $rules = [
             'nama' => 'required|max:255',
-            'id_kategori' => 'required|numeric',  
             'harga' => 'required|numeric',  
             'ketersediaan' => 'required|in:1,0',  
         ];
@@ -83,7 +83,6 @@ class AdminController extends Controller
         $updateData = [
             'nama' => $validatedData['nama'],
             'harga' => $validatedData['harga'],
-            'id_kategori' => $validatedData['id_kategori'],
             'ketersediaan' => $validatedData['ketersediaan'],
         ];
         if ($request->hasFile('gambar')) {

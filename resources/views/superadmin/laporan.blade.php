@@ -15,7 +15,7 @@
                     <div class="d-flex justify-content-between mb-3"> 
                         <div class="flex-fill me-2"> 
                             <label for="start_date" class="form-label">Tanggal Awal</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" placeholder="name@example.com" required>
+                            <input type="date" class="form-control"  id="start_date" name="start_date" placeholder="name@example.com" required>
                         </div>
                         <div class="flex-fill ms-2"> 
                             <label for="end_date" class="form-label">Tanggal Akhir</label>
@@ -41,8 +41,16 @@
                     <tbody class="text-center">
                         @foreach ($laporans as $laporan)
                             <tr>
-                                <td>{{$laporan->menu->first()->nama}}</td>
-                                <td>{{$laporan->menu->first()->category->first()->nama}}</td>
+                                <td>
+                                    <div class="d-flex flex-row gap-3">
+                                        <img src="{{ asset("storage/" . $laporan->menu->gambar) }}" alt="Menu Image" style="max-width: 75px;">
+                                        <p>
+                                            {{ $laporan->menu->nama }}
+                                        </p>
+                                    </div>
+                                </td>
+                                    {{-- {{$laporan->menu->nama}}</td> --}}
+                                <td>{{$laporan->menu->category->nama}}</td>
                                 <td>{{$laporan->total_kuantitas}}</td>
                                 <td>{{$laporan->total_harga}}</td>
                             </tr>

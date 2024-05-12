@@ -21,8 +21,11 @@
                                 <tr>
                                     <th scope="row">{{ $loop->iteration }}</th>
                                     <td>
+                                        @php
+                                            $menu = App\Models\Menu::select('gambar')->where('nama', $cart['name'])->first();
+                                        @endphp
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset("svg/food.svg") }}" alt="Product Image"
+                                            <img src="{{ asset("storage/".$menu->gambar) }}" alt="Product Image"
                                                 style="width: 70px; height: auto; margin-right: 10px;">
                                             <div>
                                                 <h6 class="fw-bold m-0">{{ $cart["name"] }}</h6>
@@ -55,7 +58,7 @@
                 <div class="col-4">
                     <div class="bg-white rounded rounded-3 p-3">
                         <h6>Total Harga</h6>
-                        <span class="text-success fw-bold fs-3">Rp {{ number_format($totalPrice, 0, ".", ".") }}</span>
+                        <span class="text-success fw-bold fs-3">Rp {{ number_format(session()->get('totalPrice'), 0, ".", ".") }}</span>
                         <div class="mt-4">
                             <form action="{{ route("pelanggan.checkout.cart") }}" method="post">
                                 @csrf
@@ -63,7 +66,7 @@
                                 <div class="mb-3 d-none">
                                     <label for="total_harga" class="form-label">Total Harga</label>
                                     <input type="number" min="1" class="form-control" name="total_harga"
-                                        value="{{ $totalPrice }}" readonly>
+                                        value="{{ $totalPrice ?? session()->get('totalPrice') }}" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <label for="nomor_meja" class="form-label">Nomor Meja</label>
@@ -99,7 +102,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex flex-row justify-content-between">
-                        <p>Tanggal: {{date('l, F d y h:i:s');}}</p>
+                        <p>Tanggal: {{date('l, d F Y h:i:s');}}</p>
                         <p>No Meja: {{$no_meja}} </p>
                     </div>
                     <table class="table">
@@ -112,18 +115,24 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $total_price = 0;
+                            @endphp
                             @foreach ($lastCart as $index => $cart)
                             <tr class="text-center">
                                 <th scope="row">{{$loop->iteration}}</th>
                                 <td>{{$cart['name']}}</td>
                                 <td>{{$cart['quantity']}}</td>
                                 <td>{{number_format($cart['total_price'], 0, ".", ".")}}</td>
-                            </tr>                               
+                            </tr>               
+                            @php
+                                $total_price += $cart['total_price'];
+                            @endphp                
                             @endforeach
 
                             <tr class="text-center">
                                 <td colspan="3" class="text-end">Total:</td>
-                                <td>Rp {{ number_format($totalPrice, 0, ".", ".") }}</td>
+                                <td>Rp {{ number_format($total_price, 0, ".", ".") }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -143,7 +152,7 @@
         Swal.fire({
             title: "Order Sukses",
 
-            text: "Halo",
+            text: "Yee, pemesananmu sedang diproses, tunggu yaa..",
             icon: "success",
             showDenyButton: true,
             reverseButtons: true,

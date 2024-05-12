@@ -13,7 +13,7 @@
             <div class="my-3">
                 <button type="button" class="btn btn-primary text-orange-500" style="background-color: black"
                     data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <img src="{{ asset("svg/add-list.svg") }}" class="mr-3">
+                    <img src="{{ asset("svg/plus-people.svg") }}" class="mr-3">
                     <span>Tambah</span>
                 </button>
 
@@ -26,8 +26,8 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <form action="{{route('superadmin.add.account')}}" method="POST" enctype="multipart/form-data">
+                            <form action="{{route('superadmin.add.account')}}" method="POST" enctype="multipart/form-data">
+                                <div class="modal-body">
                                     @csrf
                                     <div class="mb-3">
                                         <label for="nama" class="form-label">Nama</label>
@@ -61,12 +61,11 @@
                                         <label for="foto_profil" class="form-label">Gambar</label>
                                         <input class="form-control" type="file" id="foto_profil" name="foto_profil" accept="image/*" required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Selesai</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -85,12 +84,8 @@
                     <tbody>
                         @foreach ($users as $user)
                             <tr>
-                                @php
-                                    $profilePhoto = Auth::user() ? Auth::user()->profile_photo : null;
-                                    $profileSrc = $profilePhoto ? asset('storage/'.$profilePhoto) : asset('admin/img/undraw_profile.svg');
-                                @endphp
                                 <td>
-                                    <img class="img-profile mx-2" width="50px" src="{{$profileSrc}}">
+                                    <img class="img-profile mx-2" width="50px" src="{{asset('storage/'.$user->profile_photo)}}" alt="Photo Profile">
                                     {{ $user->username }}</td>
                                 <td>{{ $user->nama }}</td>
                                 <td>{{ Str::of($user->roles->first()->name)->apa() }}</td>
@@ -105,8 +100,8 @@
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <form action="{{route('superadmin.update.account', ['user_id' => $user->id])}}" method="POST" enctype="multipart/form-data">
+                                                    <form action="{{route('superadmin.update.account', ['user_id' => $user->id])}}" method="POST" enctype="multipart/form-data">
+                                                        <div class="modal-body">
                                                             @method('put')
                                                             @csrf
                                                             <div class="mb-3">
@@ -145,12 +140,11 @@
                                                                         alt="Menu Image" style="max-width: 100px;">
                                                                 @endif
                                                             </div>
-                                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-success">Ubah Data</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>

@@ -23,8 +23,15 @@
                     <tbody>
                         @foreach ($menus as $menu)
                             <tr>
-                                <td>{{ $menu->nama }}</td>
-                                <td>{{ $menu->harga }}</td>
+                                <td>
+                                    <div class="d-flex flex-row gap-3">
+                                        <img src="{{ asset("/storage/" . $menu->gambar) }}" alt="Menu Image" style="max-width: 75px;">
+                                        <p>
+                                            {{ $menu->nama }}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td>{{ number_format($menu->harga, 0, '.', '.') }}</td>
                                 <td>{{ $menu->created_at }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center align-items-center">
@@ -42,7 +49,7 @@
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="editMenuModalLabel">Modal title
+                                                        <h1 class="modal-title fs-5" id="editMenuModalLabel">Edit Menu
                                                         </h1>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
@@ -66,9 +73,9 @@
                                                             <div class="mb-3">
                                                               <label for="ketersediaan" class="form-label">Ketersediaan</label>
                                                               <select class="form-select" name="ketersediaan" aria-label="Default select example">
-                                                                <option selected>Open this select menu</option>
-                                                                <option value="1">Tersedia</option>
-                                                                <option value="0">Kosong</option>
+                                                                @foreach ([['code' => 1,'status'=>"Tersedia"],['code' => 0,'status'=>"Kosong"]] as $ketersediaan)
+                                                                <option value="{{$ketersediaan['code']}}" @if ($ketersediaan['code'] === $menu->ketersediaan) selected @endif >{{$ketersediaan['status']}}</option>
+                                                                @endforeach
                                                               </select>
                                                             </div>
                                                             

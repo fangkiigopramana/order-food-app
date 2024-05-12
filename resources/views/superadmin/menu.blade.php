@@ -101,7 +101,14 @@
                     <tbody>
                         @foreach ($menus as $menu)
                             <tr>
-                                <td>{{ $menu->nama }}</td>
+                                <td>
+                                    <div class="d-flex flex-row gap-3">
+                                        <img src="{{ asset("/storage/" . $menu->gambar) }}" alt="Menu Image" style="max-width: 75px;">
+                                        <p>
+                                            {{ $menu->nama }}
+                                        </p>
+                                    </div>
+                                </td>
                                 <td>{{ $menu->category->nama }}</td>
                                 <td>{{ $menu->harga }}</td>
                                 <td>{{ $menu->detailPesanans->count() }}</td>

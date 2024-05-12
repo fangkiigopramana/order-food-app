@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('no_meja');
             $table->string('nama_pemesan');
-            $table->float('total_harga');
+            $table->string('nomor_phone');
+            $table->bigInteger('total_harga');
             $table->string('metode');
             $table->enum('status',['proses','batal','sukses']);
             $table->timestamps();

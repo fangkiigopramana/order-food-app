@@ -60,6 +60,9 @@ class SuperAdminController extends Controller
             DB::raw('sum(total_harga) as total_harga'), 
             DB::raw('sum(kuantitas) as total_kuantitas') 
         )
+        ->whereHas('pesanan', function ($query) {
+            $query->where('status', 'sukses');
+        })
         ->with(['menu', 'menu.category']) 
         ->groupBy('id_menu') 
         ->get();
@@ -71,7 +74,12 @@ class SuperAdminController extends Controller
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
 
-        $datas = DetailPesanan::whereBetween('created_at', [$startDate, $endDate])->get();
+        $datas = DetailPesanan::whereBetween('created_at', [$startDate, $endDate])
+        ->whereHas('pesanan', function ($query) {
+            $query->where('status', 'sukses');
+        })
+        ->get();
+
         $pdf = Pdf::loadView('superadmin.report', 
         [
             'datas' => $datas,

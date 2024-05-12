@@ -31,7 +31,9 @@
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3 menu-item"
                             data-category="{{ $menu->category->nama }}">
                             <div class="card">
-                                <img src="https://assets.unileversolutions.com/recipes-v2/236001.jpg" class="card-img-top"
+                                <img src="{{asset('storage/'.$menu->gambar)}}"
+                                class="w-100 rounded-top-3"
+                                style="object-fit: cover; height: 200px;"
                                     alt="Image 1">
                                 <div class="card-body">
                                     <h6 class="card-title">{{ $menu->nama }}</h6>

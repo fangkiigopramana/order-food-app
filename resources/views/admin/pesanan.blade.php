@@ -16,6 +16,7 @@
                             <th>Nomor Meja</th>
                             <th>Daftar Pesanan</th>
                             <th>Nama Pemesan</th>
+                            <th>Nomor Telp. Pemesan</th>
                             <th>Total </th>
                             <th>Status</th>
                             <th>Action</th>
@@ -31,10 +32,11 @@
                                     @endforeach
                                 </td>
                                 <td>{{ $pesanan->nama_pemesan }}</td>
+                                <td>{{ $pesanan->nomor_phone }}</td>
                                 <td>{{ "Rp " . number_format($pesanan->total_harga, 0, ".", ".") }}</td>
                                 <td>
                                     <h5>
-                                        <span class="badge text-white bg-{{$pesanan->status == 'proses' ? 'warning' : ($pesanan->status == 'selesai' ? 'success' : 'danger')}}">{{ Str::of($pesanan->status)->apa()}}</span>
+                                        <span class="badge text-white bg-{{$pesanan->status == 'proses' ? 'warning' : ($pesanan->status == 'sukses' ? 'success' : 'danger')}}">{{ Str::of($pesanan->status)->apa()}}</span>
                                     </h5>
                                 </td>
                                 <td>

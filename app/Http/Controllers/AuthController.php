@@ -8,6 +8,7 @@ use App\Models\Pesanan;
 use Illuminate\Http\Request;
 use App\Models\DetailPesanan;
 use App\Http\Controllers\Controller;
+use App\Models\Kategori;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -74,7 +75,8 @@ class AuthController extends Controller
         $camilans = Menu::where('id_kategori', 3)
                 ->where('ketersediaan', '>', 0)
                 ->get();
-        $pesanans = Pesanan::all();
+        $pesanans = Pesanan::where('status','sukses')->get();
+        $pelanggans = Pesanan::select('nama_pemesan')->where('status','sukses')->groupBy('nama_pemesan')->get();
         $karyawans = User::role('admin')->get();
 
         $revenue_datas = Pesanan::selectRaw('SUM(total_harga) AS total_revenue, EXTRACT(YEAR FROM created_at) AS year, EXTRACT(WEEK FROM created_at) AS week')
@@ -82,7 +84,6 @@ class AuthController extends Controller
             ->orderBy('year') // Urutkan berdasarkan tahun
             ->orderBy('week') // Urutkan berdasarkan minggu dalam tahun yang sama
             ->get();
-        // dd($revenue_datas);
 
         $total_revenues = [];
 
@@ -135,7 +136,21 @@ class AuthController extends Controller
         ->orderBy('jumlah', 'desc') // Mengurutkan dari yang terbesar ke terkecil. Anda bisa mengubah ini sesuai kebutuhan
         ->get();
 
-        return view('admin.dashboard', compact('menus', 'pesanans', 'karyawans', 'makanans', 'minumans', 'camilans','detail_pesanans','total_revenues','months','profits','pelanggans', 'recomendations'));
+        $most_menu_order = Kategori::select(
+            'kategoris.id',
+            'kategoris.nama',
+            DB::raw('COALESCE(SUM(detail_pesanans.kuantitas), 0) as total_kuantitas')
+        )
+        ->leftJoin('menus', 'kategoris.id', '=', 'menus.id_kategori')
+        ->leftJoin('detail_pesanans', 'menus.id', '=', 'detail_pesanans.id_menu')
+        ->leftJoin('pesanans', 'detail_pesanans.id_pesanan', '=', 'pesanans.id')
+        ->where('pesanans.status', 'sukses')
+        ->groupBy('kategoris.id', 'kategoris.nama')
+        ->get();
+    
+        // dd($most_menu_order);
+
+        return view('admin.dashboard', compact('menus', 'pesanans', 'karyawans', 'makanans', 'minumans', 'camilans','detail_pesanans','total_revenues','months','profits','pelanggans', 'recomendations','most_menu_order'));
     }
 
     public function logout(Request $request)

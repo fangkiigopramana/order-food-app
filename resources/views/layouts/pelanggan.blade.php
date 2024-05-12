@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Restoran - Bootstrap Restaurant Template</title>
+    <title>Warmindo Aroma | {{$title ?? ''}}</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -59,9 +59,9 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-start align-items-center" id="navbarCollapse">
                     <div class="navbar-nav mx-auto py-0 pe-4 ">
-                        <a href="{{route('home')}}" class="nav-item nav-link active fw-bolder">Beranda</a>
-                        <a href="{{route('pelanggan.menu')}}" class="nav-item nav-link active">Menu</a>
-                        <a href="{{route('pelanggan.cart')}}" class="nav-item nav-link active">Keranjang</a>
+                        <a href="{{route('home')}}" class="nav-item nav-link active {{ request()->routeIs('home') ?'fw-bolder' : ''}}">Beranda</a>
+                        <a href="{{route('pelanggan.menu')}}" class="nav-item nav-link active {{ request()->routeIs('pelanggan.menu') ?'fw-bolder' : ''}}">Menu</a>
+                        <a href="{{route('pelanggan.cart')}}" class="nav-item nav-link active {{ request()->routeIs('pelanggan.cart') ?'fw-bolder' : ''}}">Keranjang</a>
                     </div>
                 </div>
             </nav>
